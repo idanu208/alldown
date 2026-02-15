@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediaMaster - All-in-One Downloader</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header h1 i {
+            margin-right: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .supported-platforms {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .platform-badge {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(5px);
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .platform-badge i {
+            font-size: 1.1em;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+            min-width: 280px;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #764ba2;
+            font-size: 1.2em;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 18px 20px 18px 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .url-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .fetch-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fetch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102,126,234,0.4);
+        }
+
+        .fetch-btn i {
+            font-size: 1.2em;
+        }
+
+        .options-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .options-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .option-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-item label {
+            font-weight: 500;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        .option-select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            font-size: 0.95em;
+            background: white;
+            cursor: pointer;
+        }
+
+        .option-select:focus {
+            border-color: #667eea;
+        }
+
+        .quality-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e9ecef;
+            border-radius: 5px;
+            font-size: 0.85em;
+            color: #555;
+        }
+
+        .results-area {
+            min-height: 200px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .results-area.has-content {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .media-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .media-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .media-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .media-info {
+            flex: 1;
+        }
+
+        .media-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .media-meta {
+            display: flex;
+            gap: 15px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .media-meta i {
+            margin-right: 3px;
+            color: #667eea;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 0.95em;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.3);
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: #764ba2;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #764ba2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #fcc;
+        }
+
+        .placeholder-text {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+        }
+
+        .placeholder-text i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-card {
+                padding: 20px;
+            }
+            
+            .fetch-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-cloud-download-alt"></i>
+                MediaMaster
+            </h1>
+            <p>Download video & audio dari berbagai platform dengan mudah</p>
+            <div class="supported-platforms">
+                <span class="platform-badge"><i class="fab fa-youtube"></i> YouTube</span>
+                <span class="platform-badge"><i class="fab fa-instagram"></i> Instagram</span>
+                <span class="platform-badge"><i class="fab fa-facebook"></i> Facebook</span>
+                <span class="platform-badge"><i class="fab fa-tiktok"></i> TikTok</span>
+                <span class="platform-badge"><i class="fab fa-twitter"></i> Twitter</span>
+                <span class="platform-badge"><i class="fas fa-link"></i> 100+ Lainnya</span>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <div class="input-group">
+                <div class="input-wrapper">
+                    <i class="fas fa-link"></i>
+                    <input type="url" class="url-input" id="urlInput" placeholder="Tempel link video di sini..." value="">
+                </div>
+                <button class="fetch-btn" id="fetchBtn">
+                    <i class="fas fa-search"></i>
+                    Ambil Media
+                </button>
+            </div>
+
+            <div class="options-panel">
+                <div class="options-title">
+                    <i class="fas fa-sliders-h" style="margin-right: 10px;"></i>
+                    Opsi Download
+                </div>
+                <div class="options-grid">
+                    <div class="option-item">
+                        <label><i class="fas fa-download"></i> Tipe Download</label>
+                        <select class="option-select" id="downloadType">
+                            <option value="video">Video + Audio (MP4)</option>
+                            <option value="audio">Audio Only (MP3)</option>
+                            <option value="video-only">Video Only (No Audio)</option>
+                        </select>
+                    </div>
+                    <div class="option-item">
+                        <label><i class="fas fa-video"></i> Kualitas Video</label>
+                        <select class="option-select" id="videoQuality">
+                            <option value="highest">Tertinggi (4K/1080p)</option>
+                            <option value="high">Tinggi (1080p)</option>
+                            <option value="medium">Sedang (720p)</option>
+                            <option value="low">Rendah (480p)</option>
+                        </select>
+                    </div>
+                    <div class="option-item">
+                        <label><i class="fas fa-music"></i> Kualitas Audio</label>
+                        <select class="option-select" id="audioQuality">
+                            <option value="320">320 kbps (Terbaik)</option>
+                            <option value="256">256 kbps</option>
+                            <option value="192">192 kbps</option>
+                            <option value="128">128 kbps</option>
+                        </select>
+                    </div>
+                    <div class="option-item">
+                        <label><i class="fas fa-cog"></i> Format</label>
+                        <select class="option-select" id="fileFormat">
+                            <option value="mp4">MP4</option>
+                            <option value="webm">WebM</option>
+                            <option value="mkv">MKV</option>
+                            <option value="mp3">MP3 (Audio)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-area" id="resultsArea">
+                <div class="placeholder-text" id="placeholder">
+                    <i class="fas fa-arrow-up"></i>
+                    <h3>Tempel link untuk memulai</h3>
+                    <p>Link akan diproses secara otomatis</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 MediaMaster - All-in-One Downloader | Gratis & Mudah Digunakan</p>
+        </div>
+    </div>
+
+    <script>
+        // Demo data untuk berbagai platform
+        const demoResponses = {
+            'youtube': {
+                title: 'Video YouTube Premium',
+                duration: '10:30',
+                size: '245 MB',
+                quality: ['4K', '1080p', '720p', '480p'],
+                thumbnail: 'youtube',
+                author: 'Channel Official'
+            },
+            'instagram': {
+                title: 'Instagram Reels Viral',
+                duration: '00:45',
+                size: '15 MB',
+                quality: ['1080p', '720p'],
+                thumbnail: 'instagram',
+                author: '@username'
+            },
+            'tiktok': {
+                title: 'TikTok Trending',
+                duration: '00:30',
+                size: '8 MB',
+                quality: ['1080p', '720p'],
+                thumbnail: 'tiktok',
+                author: '@creator'
+            },
+            'facebook': {
+                title: 'Facebook Video',
+                duration: '05:20',
+                size: '120 MB',
+                quality: ['1080p', '720p', '480p'],
+                thumbnail: 'facebook',
+                author: 'Page Name'
+            },
+            'twitter': {
+                title: 'Twitter/X Video',
+                duration: '02:15',
+                size: '45 MB',
+                quality: ['720p', '480p'],
+                thumbnail: 'twitter',
+                author: '@user'
+            }
+        };
+
+        const urlInput = document.getElementById('urlInput');
+        const fetchBtn = document.getElementById('fetchBtn');
+        const resultsArea = document.getElementById('resultsArea');
+        const placeholder = document.getElementById('placeholder');
+        const downloadType = document.getElementById('downloadType');
+        const videoQuality = document.getElementById('videoQuality');
+        const audioQuality = document.getElementById('audioQuality');
+        const fileFormat = document.getElementById('fileFormat');
+
+        // Auto detect platform dari URL
+        function detectPlatform(url) {
+            if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+            if (url.includes('instagram.com')) return 'instagram';
+            if (url.includes('tiktok.com')) return 'tiktok';
+            if (url.includes('facebook.com') || url.includes('fb.com')) return 'facebook';
+            if (url.includes('twitter.com') || url.includes('x.com')) return 'twitter';
+            return 'general';
+        }
+
+        // Format ukuran file
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Generate ukuran file random untuk demo
+        function generateRandomSize() {
+            return Math.floor(Math.random() * 500) + 5; // 5-505 MB
+        }
+
+        // Tampilkan loading
+        function showLoading() {
+            resultsArea.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Menganalisis link...</p>
+                    <small>Mohon tunggu sebentar</small>
+                </div>
+            `;
+            resultsArea.classList.add('has-content');
+        }
+
+        // Tampilkan error
+        function showError(message) {
+            resultsArea.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle" style="font-size: 2em; margin-bottom: 10px;"></i>
+                    <h3>Oops! Terjadi kesalahan</h3>
+                    <p>${message}</p>
+                    <button onclick="retryLastUrl()" class="fetch-btn" style="margin-top: 15px; padding: 10px 20px;">
+                        <i class="fas fa-redo"></i> Coba Lagi
+                    </button>
+                </div>
+            `;
+        }
+
+        // Tampilkan hasil download
+        function showResults(platform, url) {
+            const demoData = demoResponses[platform] || {
+                title: 'Media dari ' + url.substring(0, 30) + '...',
+                duration: '03:45',
+                size: formatFileSize(generateRandomSize() * 1024 * 1024),
+                quality: ['1080p', '720p', '480p'],
+                thumbnail: 'general',
+                author: 'Unknown User'
+            };
+
+            const downloadTypeValue = downloadType.value;
+            const videoQualityValue = videoQuality.value;
+            const audioQualityValue = audioQuality.value;
+            const fileFormatValue = fileFormat.value;
+
+            // Generate multiple format options
+            const formats = [
+                { quality: 'video', label: 'MP4 Video', icon: 'fa-video', size: '245 MB' },
+                { quality: 'audio', label: 'MP3 Audio', icon: 'fa-music', size: '15 MB' },
+                { quality: 'hd', label: 'HD Video (1080p)', icon: 'fa-film', size: '189 MB' }
+            ];
+
+            let resultsHTML = `
+                <div class="media-item">
+                    <div class="media-icon">
+                        <i class="fab fa-${demoData.thumbnail === 'general' ? 'youtube' : demoData.thumbnail}"></i>
+                    </div>
+                    <div class="media-info">
+                        <div class="media-title">${demoData.title}</div>
+                        <div class="media-meta">
+                            <span><i class="fas fa-user"></i> ${demoData.author}</span>
+                            <span><i class="fas fa-clock"></i> ${demoData.duration}</span>
+                            <span><i class="fas fa-hdd"></i> ${demoData.size}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Tampilkan opsi download berdasarkan tipe yang dipilih
+            if (downloadTypeValue === 'audio') {
+                resultsHTML += `
+                    <div class="media-item" style="background: linear-gradient(135deg, #f0f3ff 0%, #ffffff 100%);">
+                        <div class="media-icon" style="background: #28a745;">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="media-info">
+                            <div class="media-title">Audio MP3 (${audioQuality.options[audioQuality.selectedIndex].text})</div>
+                            <div class="media-meta">
+                                <span><i class="fas fa-microchip"></i> Bitrate: ${audioQuality.value} kbps</span>
+                                <span><i class="fas fa-hdd"></i> ~${Math.round(generateRandomSize()/10)} MB</span>
+                            </div>
+                        </div>
+                        <a href="#" onclick="simulateDownload('audio', event)" class="download-btn">
+                            <i class="fas fa-download"></i>
+                            Download Audio
+                        </a>
+                    </div>
+                `;
+            } else {
+                // Tampilkan beberapa opsi video
+                formats.forEach(format => {
+                    resultsHTML += `
+                        <div class="media-item">
+                            <div class="media-icon" style="background: #667eea;">
+                                <i class="fas ${format.icon}"></i>
+                            </div>
+                            <div class="media-info">
+                                <div class="media-title">${format.label}</div>
+                                <div class="media-meta">
+                                    <span><i class="fas fa-video"></i> ${videoQuality.options[videoQuality.selectedIndex].text}</span>
+                                    <span><i class="fas fa-hdd"></i> ${format.size}</span>
+                                </div>
+                            </div>
+                            <a href="#" onclick="simulateDownload('${format.quality}', event)" class="download-btn">
+                                <i class="fas fa-download"></i>
+                                Download
+                            </a>
+                        </div>
+                    `;
+                });
+            }
+
+            resultsArea.innerHTML = resultsHTML;
+        }
+
+        // Simulasi download
+        window.simulateDownload = function(type, event) {
+            event.preventDefault();
+            
+            // Tampilkan notifikasi
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.innerHTML = `
+                <i class="fas fa-check-circle" style="margin-right: 10px;"></i>
+                <strong>Download dimulai!</strong><br>
+                <small>File akan tersedia dalam beberapa saat</small>
+            `;
+            document.body.appendChild(notification);
+            
+            // Hapus notifikasi setelah 3 detik
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+            
+            // Buat link download palsu
+            const link = document.createElement('a');
+            link.href = '#'; // Dalam implementasi nyata, ini akan menjadi URL download sebenarnya
+            link.download = `media-${type}-${Date.now()}.mp4`;
+            link.click();
+        };
+
+        // Coba lagi
+        window.retryLastUrl = function() {
+            const lastUrl = urlInput.value;
+            if (lastUrl) {
+                processUrl(lastUrl);
+            }
+        };
+
+        // Proses URL
+        function processUrl(url) {
+            if (!url) {
+                showError('Masukkan URL terlebih dahulu!');
+                return;
+            }
+
+            showLoading();
+
+            // Simulasi proses fetching
+            setTimeout(() => {
+                const platform = detectPlatform(url);
+                
+                // Cek apakah URL valid (simulasi)
+                if (url.includes('invalid') || url.length < 5) {
+                    showError('URL tidak valid atau tidak didukung. Pastikan URL benar dan coba lagi.');
+                } else {
+                    showResults(platform, url);
+                }
+            }, 2000);
+        }
+
+        // Event listener untuk tombol fetch
+        fetchBtn.addEventListener('click', () => {
+            processUrl(urlInput.value);
+        });
+
+        // Event listener untuk enter key
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                processUrl(urlInput.value);
+            }
+        });
+
+        // Auto-fill dengan contoh URL saat halaman dimuat
+        window.addEventListener('load', () => {
+            const demoUrls = [
+                'https://youtube.com/watch?v=example123',
+                'https://instagram.com/p/example/',
+                'https://tiktok.com/@user/video/123456',
+                'https://facebook.com/watch/?v=123456789'
+            ];
+            
+            // Set placeholder contoh
+            urlInput.placeholder = 'Contoh: ' + demoUrls[0];
+        });
+
+        // Tambahkan CSS animasi
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Inisialisasi tooltips atau fitur tambahan
+        console.log('MediaMaster siap digunakan!');
+    </script>
+</body>
+</html>
